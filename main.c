@@ -140,14 +140,21 @@ void system_render(System *s) {
         circle_render(&s->cs[i], CIRCLE_INNER_COLOR, CIRCLE_BORDER_COLOR);
     }
 
+
+
+    #define RENDER_LINKS
+    #ifdef RENDER_LINKS
+
     for(size_t i = 1; i < CIRCLE_COUNT; ++i) {
         fV2 prev = s->cs[i - 1].c;
         fV2 current = s->cs[i].c;
-        DrawLine(prev.x, prev.y, current.x, current.y, BLACK );
+        DrawLine(prev.x, prev.y, current.x, current.y, WHITE);
         DrawCircle(prev.x, prev.y, CENTER_CIRCLE_RADIUS, RED);
     }
 
     DrawCircle(s->cs[CIRCLE_COUNT - 1].c.x, s->cs[CIRCLE_COUNT - 1].c.y, CENTER_CIRCLE_RADIUS, RED);
+
+    #endif
 }
 
 void system_dump(System *s) {
@@ -179,6 +186,7 @@ int main(void) {
     SetTargetFPS(60);
 
     while(!app_should_stop()) {
+        DrawFPS(10, 10);
         system_rotate(&s, angle);
 
         BeginDrawing();
