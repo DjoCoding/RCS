@@ -97,6 +97,7 @@ typedef struct {
     Circle cs[CIRCLE_COUNT];
 } System;
 
+#define CENTER_CIRCLE_RADIUS 3.0f
 #define CIRCLE_INNER_COLOR  GRAY 
 #define CIRCLE_BORDER_COLOR WHITE
 #define CIRCLE_BORDER_SIZE  1.0f
@@ -124,14 +125,13 @@ System system_init(float initial_radius, fV2 initial_center) {
 void system_rotate(System *s, float angle) {
     for(size_t i = 1; i < CIRCLE_COUNT; ++i) {
         fV2 current = s->cs[i].c;
-        circle_rotate(&s->cs[i], s->cs[i - 1].c, angle);
+        circle_rotate(&s->cs[i], s->cs[i - 1].c, i * angle);        
         fV2 now = s->cs[i].c;
 
-        fV2 dc = fv2_sub(now, current);
-
-        for(size_t j = i + 1; j < CIRCLE_COUNT; ++j) { 
+        fV2 dc = fv2_sub(now, current); 
+        for(size_t j = i + 1; j < CIRCLE_COUNT; ++j) {
             circle_move(&s->cs[j], dc);
-        }
+        }    
     }
 }
 
@@ -139,6 +139,15 @@ void system_render(System *s) {
     for(size_t i = 0; i < CIRCLE_COUNT; ++i) {
         circle_render(&s->cs[i], CIRCLE_INNER_COLOR, CIRCLE_BORDER_COLOR);
     }
+
+    for(size_t i = 1; i < CIRCLE_COUNT; ++i) {
+        fV2 prev = s->cs[i - 1].c;
+        fV2 current = s->cs[i].c;
+        DrawLine(prev.x, prev.y, current.x, current.y, BLACK );
+        DrawCircle(prev.x, prev.y, CENTER_CIRCLE_RADIUS, RED);
+    }
+
+    DrawCircle(s->cs[CIRCLE_COUNT - 1].c.x, s->cs[CIRCLE_COUNT - 1].c.y, CENTER_CIRCLE_RADIUS, RED);
 }
 
 void system_dump(System *s) {
